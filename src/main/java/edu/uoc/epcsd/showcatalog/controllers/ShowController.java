@@ -44,25 +44,19 @@ public class ShowController {
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> createShow(@RequestBody ShowDto show) {
-        try {
-            log.trace("Create show");
+    @ResponseBody
+    public Long createShow(@RequestBody ShowDto show) throws CategoryNotFoundException {
+        log.trace("Create show");
 
-            catalogService.createShow(show.categoryId,
-                    show.name,
-                    show.description,
-                    show.image,
-                    show.price,
-                    show.duration,
-                    show.capacity);
+        Long id = catalogService.createShow(show.categoryId,
+                show.name,
+                show.description,
+                show.image,
+                show.price,
+                show.duration,
+                show.capacity);
 
-            return ResponseEntity.created(URI.create("/show/" + show.name)).build();
-        } catch (CategoryNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (Exception e) {
-            log.error(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return id;
     }
 
     @PostMapping("/{showId}/performance")
