@@ -118,4 +118,8 @@ public class CatalogService {
     public Optional<Show> viewShow(Long showId) {
         return showRepository.findById(showId);
     }
+
+    public Optional<List<Performance>> listPerformancesOfShow(Long showId) {
+        return showRepository.findById(showId).map(Show::getPerformances);
+    }
 }

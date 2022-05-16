@@ -2,6 +2,7 @@ package edu.uoc.epcsd.showcatalog.controllers;
 
 import edu.uoc.epcsd.showcatalog.controllers.dtos.PerformanceDto;
 import edu.uoc.epcsd.showcatalog.controllers.dtos.ShowDto;
+import edu.uoc.epcsd.showcatalog.entities.Performance;
 import edu.uoc.epcsd.showcatalog.entities.Show;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.CatalogService;
@@ -138,5 +139,11 @@ public class ShowController {
     @ResponseBody
     public Show getShow(@PathVariable Long id) throws ShowNotFoundException {
         return this.catalogService.viewShow(id).orElseThrow(ShowNotFoundException::new);
+    }
+
+    @GetMapping("/{showId}/performances")
+    @ResponseBody
+    public List<Performance> getPerformancesOfShow(@PathVariable Long showId) throws ShowNotFoundException {
+        return this.catalogService.listPerformancesOfShow(showId).orElseThrow(ShowNotFoundException::new);
     }
 }
