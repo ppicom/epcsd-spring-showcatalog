@@ -15,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
@@ -103,6 +104,17 @@ public class ShowController {
             this.catalogService.deletePerformance(showId, performanceId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<Show>> getShowsByName(@QueryParam(value = "name") String name) {
+        try {
+            List<Show> shows = this.catalogService.listShowsByName(name);
+            return ResponseEntity.ok(shows);
+        } catch (Exception e) {
+            log.error(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

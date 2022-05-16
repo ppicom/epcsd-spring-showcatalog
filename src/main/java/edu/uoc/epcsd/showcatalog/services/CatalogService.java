@@ -101,4 +101,8 @@ public class CatalogService {
            showRepository.save(show);
         }, ShowNotFoundException::new);
     }
+
+    public List<Show> listShowsByName(String name) {
+        return showRepository.findByNameContainingIgnoreCase(name);
+    }
 }
