@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
@@ -131,5 +132,11 @@ public class ShowController {
             log.error(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public Show getShow(@PathVariable Long id) throws ShowNotFoundException {
+        return this.catalogService.viewShow(id).orElseThrow(ShowNotFoundException::new);
     }
 }
