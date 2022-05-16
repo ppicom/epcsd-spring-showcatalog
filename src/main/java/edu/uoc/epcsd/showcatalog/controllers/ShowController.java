@@ -96,5 +96,14 @@ public class ShowController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    // add the code for the missing system operations here
+
+    @DeleteMapping("/{showId}/performance/{performanceId}")
+    public ResponseEntity<Void> removePerformance(@PathVariable Long showId, @PathVariable Long performanceId) {
+        try {
+            this.catalogService.deletePerformance(showId, performanceId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

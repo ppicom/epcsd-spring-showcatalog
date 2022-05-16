@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CatalogService {
@@ -87,5 +88,17 @@ public class CatalogService {
 
     public void deleteShow(Long showId) {
         showRepository.deleteById(showId);
+    }
+
+    public void deletePerformance(Long showId, Long performanceId) {
+        showRepository.findById(showId).ifPresentOrElse((show) -> {
+           List<Performance> filteredPerformances = show.getPerformances().stream()
+                    .filter((performance) -> !performance.getId().equals(performanceId))
+                    .collect(Collectors.toList());
+
+           show.setPerformances(filteredPerformances);
+
+           showRepository.save(show);
+        }, ShowNotFoundException::new);
     }
 }
