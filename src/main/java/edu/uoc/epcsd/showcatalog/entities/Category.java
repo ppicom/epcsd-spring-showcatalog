@@ -27,6 +27,6 @@ public class Category {
     private String description;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "categories")
+    @ManyToMany(mappedBy = "categories", cascade = { CascadeType.REMOVE })
     private List<Show> shows;
 }

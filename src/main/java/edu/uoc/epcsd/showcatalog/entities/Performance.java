@@ -49,7 +49,7 @@ public class Performance {
     private Status status;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "show_id", nullable = false)
     private Show show;
 }

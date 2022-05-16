@@ -53,6 +53,6 @@ public class Show {
     private List<Category> categories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "show")
+    @OneToMany(mappedBy = "show", cascade = { CascadeType.REMOVE })
     private List<Performance> performances;
 }
