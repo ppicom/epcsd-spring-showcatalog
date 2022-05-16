@@ -4,6 +4,7 @@ import edu.uoc.epcsd.showcatalog.controllers.dtos.PerformanceDto;
 import edu.uoc.epcsd.showcatalog.controllers.dtos.ShowDto;
 import edu.uoc.epcsd.showcatalog.entities.Performance;
 import edu.uoc.epcsd.showcatalog.entities.Show;
+import edu.uoc.epcsd.showcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.CatalogService;
 import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
@@ -45,18 +46,22 @@ public class ShowController {
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Long createShow(@RequestBody ShowDto show) throws CategoryNotFoundException {
+    public Long createShow(@RequestBody ShowDto showDto) throws CategoryNotFoundException {
         log.trace("Create show");
 
-        Long id = catalogService.createShow(show.categoryId,
-                show.name,
-                show.description,
-                show.image,
-                show.price,
-                show.duration,
-                show.capacity);
+        Show show = catalogService.createShow(showDto.categoryId,
+                showDto.name,
+                showDto.description,
+                showDto.image,
+                showDto.price,
+                showDto.duration,
+                showDto.capacity);
 
-        return id;
+        log.trace("Sending message to topic " + KafkaConstants.SHOW_TOPIC + " after creating show " + show.getId() + "...");
+        kafkaTemplate.send(KafkaConstants.SHOW_TOPIC, show);
+        log.trace("Message sent.");
+
+        return show.getId();
     }
 
     @PostMapping("/{showId}/performance")

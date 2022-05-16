@@ -37,7 +37,7 @@ public class CatalogService {
         return category.getId();
     }
 
-    public Long createShow(Long categoryId, String name, String description, String image, double price,
+    public Show createShow(Long categoryId, String name, String description, String image, double price,
                            int duration, int capacity) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
 
@@ -57,7 +57,7 @@ public class CatalogService {
 
         showRepository.save(show);
 
-        return show.getId();
+        return show;
     }
 
     public Long createPerformance(Long showId,
