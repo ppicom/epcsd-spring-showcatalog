@@ -52,4 +52,8 @@ public class Performance {
     @ManyToOne()
     @JoinColumn(name = "show_id", nullable = false)
     private Show show;
+
+    public void cancel() {
+        status = Status.CANCELLED;
+    }
 }

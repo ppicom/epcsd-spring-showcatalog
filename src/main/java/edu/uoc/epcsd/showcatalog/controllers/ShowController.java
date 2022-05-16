@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -122,6 +123,12 @@ public class ShowController {
     @ResponseBody
     public List<Performance> getPerformancesOfShow(@PathVariable Long showId) throws ShowNotFoundException {
         return this.catalogService.listPerformancesOfShow(showId).orElseThrow(ShowNotFoundException::new);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void cancelShow(@PathVariable long id) throws ShowNotFoundException {
+        this.catalogService.cancelShow(id);
     }
 
     @ExceptionHandler({CategoryNotFoundException.class, ShowNotFoundException.class})

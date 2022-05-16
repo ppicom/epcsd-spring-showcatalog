@@ -11,6 +11,8 @@ import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
 import edu.uoc.epcsd.showcatalog.services.exceptions.ShowNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +35,10 @@ public class CatalogService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
-    public List<Show> getAllShows() { return showRepository.findAll(); }
+
+    public List<Show> getAllShows() {
+        return showRepository.findAll();
+    }
 
     public Long createCategory(String name, String description) {
         Category category = new Category();
@@ -67,12 +72,12 @@ public class CatalogService {
     }
 
     public Long createPerformance(Long showId,
-                             String name,
-                             String description,
-                             String image,
-                             double price,
-                             int capacity,
-                             int duration) throws ShowNotFoundException {
+                                  String name,
+                                  String description,
+                                  String image,
+                                  double price,
+                                  int capacity,
+                                  int duration) throws ShowNotFoundException {
         Show show = showRepository.findById(showId).orElseThrow(ShowNotFoundException::new);
 
         Performance performance = new Performance();
@@ -102,13 +107,13 @@ public class CatalogService {
 
     public void deletePerformance(Long showId, Long performanceId) {
         showRepository.findById(showId).ifPresentOrElse((show) -> {
-           List<Performance> filteredPerformances = show.getPerformances().stream()
+            List<Performance> filteredPerformances = show.getPerformances().stream()
                     .filter((performance) -> !performance.getId().equals(performanceId))
                     .collect(Collectors.toList());
 
-           show.setPerformances(filteredPerformances);
+            show.setPerformances(filteredPerformances);
 
-           showRepository.save(show);
+            showRepository.save(show);
         }, ShowNotFoundException::new);
     }
 
@@ -117,11 +122,11 @@ public class CatalogService {
     }
 
     public List<Show> listShowsByCategory(Long categoryId) {
-       List<Show> shows = categoryRepository.findById(categoryId)
-               .map(Category::getShows)
-               .orElse(Collections.emptyList());
+        List<Show> shows = categoryRepository.findById(categoryId)
+                .map(Category::getShows)
+                .orElse(Collections.emptyList());
 
-       return shows;
+        return shows;
     }
 
     public Optional<Show> viewShow(Long showId) {
@@ -130,5 +135,14 @@ public class CatalogService {
 
     public Optional<List<Performance>> listPerformancesOfShow(Long showId) {
         return showRepository.findById(showId).map(Show::getPerformances);
+    }
+
+    public void cancelShow(@PathVariable long id) throws ShowNotFoundException {
+        var show = showRepository.findById(id).orElseThrow(ShowNotFoundException::new);
+
+        show.cancel();
+
+        showRepository.save(show);
+        performanceRepository.saveAll(show.getPerformances());
     }
 }

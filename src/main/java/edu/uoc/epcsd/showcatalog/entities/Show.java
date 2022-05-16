@@ -53,6 +53,13 @@ public class Show {
     private List<Category> categories;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "show", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "show", cascade = {CascadeType.REMOVE})
     private List<Performance> performances;
+
+    public void cancel() {
+        status = Status.CANCELLED;
+        performances.forEach(performance -> {
+            performance.cancel();
+        });
+    }
 }
