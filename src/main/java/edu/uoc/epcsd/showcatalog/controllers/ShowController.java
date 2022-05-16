@@ -4,6 +4,7 @@ import edu.uoc.epcsd.showcatalog.controllers.dtos.PerformanceDto;
 import edu.uoc.epcsd.showcatalog.controllers.dtos.ShowDto;
 import edu.uoc.epcsd.showcatalog.entities.Performance;
 import edu.uoc.epcsd.showcatalog.entities.Show;
+import edu.uoc.epcsd.showcatalog.entities.exceptions.InvalidStateTransactionException;
 import edu.uoc.epcsd.showcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.CatalogService;
@@ -128,7 +129,7 @@ public class ShowController {
 
     @PutMapping("/{id}/cancel")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void cancelShow(@PathVariable long id) throws ShowNotFoundException {
+    public void cancelShow(@PathVariable long id) throws ShowNotFoundException, InvalidStateTransactionException {
         this.catalogService.cancelShow(id);
     }
 
@@ -136,6 +137,12 @@ public class ShowController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void cancelPerformance(@PathVariable long showId, @PathVariable long performanceId) throws ShowNotFoundException, PerformanceNotFoundException {
         this.catalogService.cancelPerformance(showId, performanceId);
+    }
+
+    @PutMapping("/{id}/open")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void openShow(@PathVariable long id) throws ShowNotFoundException, InvalidStateTransactionException {
+        this.catalogService.openShow(id);
     }
 
     @ExceptionHandler({CategoryNotFoundException.class, ShowNotFoundException.class})

@@ -4,6 +4,7 @@ import edu.uoc.epcsd.showcatalog.entities.Category;
 import edu.uoc.epcsd.showcatalog.entities.Performance;
 import edu.uoc.epcsd.showcatalog.entities.Show;
 import edu.uoc.epcsd.showcatalog.entities.Status;
+import edu.uoc.epcsd.showcatalog.entities.exceptions.InvalidStateTransactionException;
 import edu.uoc.epcsd.showcatalog.repositories.CategoryRepository;
 import edu.uoc.epcsd.showcatalog.repositories.PerformanceRepository;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
@@ -138,7 +139,7 @@ public class CatalogService {
         return showRepository.findById(showId).map(Show::getPerformances);
     }
 
-    public void cancelShow(@PathVariable long id) throws ShowNotFoundException {
+    public void cancelShow(@PathVariable long id) throws ShowNotFoundException, InvalidStateTransactionException {
         var show = showRepository.findById(id).orElseThrow(ShowNotFoundException::new);
 
         show.cancel();
@@ -154,5 +155,11 @@ public class CatalogService {
         performance.cancel();
 
         performanceRepository.save(performance);
+    }
+
+    public void openShow(long id) throws ShowNotFoundException, InvalidStateTransactionException {
+        var show = showRepository.findById(id).orElseThrow(ShowNotFoundException::new);
+
+        show.open();
     }
 }

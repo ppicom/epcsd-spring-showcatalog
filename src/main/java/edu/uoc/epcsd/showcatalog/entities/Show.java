@@ -1,6 +1,7 @@
 package edu.uoc.epcsd.showcatalog.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.uoc.epcsd.showcatalog.entities.exceptions.InvalidStateTransactionException;
 import lombok.*;
 
 import javax.persistence.*;
@@ -56,10 +57,29 @@ public class Show {
     @OneToMany(mappedBy = "show", cascade = {CascadeType.REMOVE})
     private List<Performance> performances;
 
-    public void cancel() {
+    public void cancel() throws InvalidStateTransactionException {
+        if(isCancelled()) {
+            throw new InvalidStateTransactionException();
+        }
         status = Status.CANCELLED;
         performances.forEach(performance -> {
             performance.cancel();
         });
+    }
+
+    private boolean isCancelled() {
+        return status == Status.CANCELLED;
+    }
+
+    public void open() throws InvalidStateTransactionException {
+        if(isOpen()) {
+            throw new InvalidStateTransactionException();
+        }
+
+        status = Status.OPEN;
+    }
+
+    private boolean isOpen() {
+        return status == Status.OPEN;
     }
 }
