@@ -36,7 +36,7 @@ public class Performance {
     @Column(name = "duration", nullable = false)
     private int duration;
 
-    @Column(name = "date", nullable = false)
+    @Column(name = "date")
     private ZonedDateTime date;
 
     @Column(name = "streaming_url", nullable = false)

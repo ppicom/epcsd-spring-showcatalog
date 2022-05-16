@@ -35,14 +35,6 @@ public class ShowController {
     @Autowired
     private KafkaTemplate<String, Show> kafkaTemplate;
 
-    @GetMapping("/")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Show> getAllShows() {
-        log.trace("getAllShows");
-
-        return catalogService.getAllShows();
-    }
-
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -57,14 +49,14 @@ public class ShowController {
                 showDto.duration,
                 showDto.capacity);
 
-        log.trace("Sending message to topic " + KafkaConstants.SHOW_TOPIC + " after creating show " + show.getId() + "...");
+        log.info("Sending message to topic " + KafkaConstants.SHOW_TOPIC + " after creating show " + show.getId() + "...");
         kafkaTemplate.send(KafkaConstants.SHOW_TOPIC, show);
-        log.trace("Message sent.");
+        log.info("Message sent.");
 
         return show.getId();
     }
 
-    @PostMapping("/{showId}/performance")
+    @PostMapping("/{showId}/performances")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Long> createPerformance(@PathVariable String showId,
                                                   @RequestBody PerformanceDto performanceDto) {
@@ -108,26 +100,15 @@ public class ShowController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Show>> getShowsByName(@QueryParam(value = "name") String name) {
-        try {
-            List<Show> shows = this.catalogService.listShowsByName(name);
-            return ResponseEntity.ok(shows);
-        } catch (Exception e) {
-            log.error(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/")
-    public ResponseEntity<List<Show>> getShowsByCategory(@QueryParam(value = "categoryId") Long categoryId) {
-        try {
-            List<Show> shows = this.catalogService.listShowsByCategory(categoryId);
-            return ResponseEntity.ok(shows);
-        } catch (CategoryNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @ResponseBody
+    public List<Show> getShows(@QueryParam(value = "name") String name,
+                               @QueryParam(value = "categoryId") String categoryId) throws CategoryNotFoundException {
+        if (name != null) {
+            return catalogService.listShowsByName(name);
+        } else if (categoryId != null) {
+            return catalogService.listShowsByCategory(Long.parseLong(categoryId));
+        } else {
+            return catalogService.getAllShows();
         }
     }
 
@@ -141,5 +122,10 @@ public class ShowController {
     @ResponseBody
     public List<Performance> getPerformancesOfShow(@PathVariable Long showId) throws ShowNotFoundException {
         return this.catalogService.listPerformancesOfShow(showId).orElseThrow(ShowNotFoundException::new);
+    }
+
+    @ExceptionHandler({CategoryNotFoundException.class, ShowNotFoundException.class})
+    public ResponseEntity<Void> handleException() {
+        return ResponseEntity.notFound().build();
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
 
     @Autowired

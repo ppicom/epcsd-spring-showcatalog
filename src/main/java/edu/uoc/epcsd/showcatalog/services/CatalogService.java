@@ -5,12 +5,15 @@ import edu.uoc.epcsd.showcatalog.entities.Performance;
 import edu.uoc.epcsd.showcatalog.entities.Show;
 import edu.uoc.epcsd.showcatalog.entities.Status;
 import edu.uoc.epcsd.showcatalog.repositories.CategoryRepository;
+import edu.uoc.epcsd.showcatalog.repositories.PerformanceRepository;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
 import edu.uoc.epcsd.showcatalog.services.exceptions.ShowNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +26,9 @@ public class CatalogService {
 
     @Autowired
     private ShowRepository showRepository;
+
+    @Autowired
+    private PerformanceRepository performanceRepository;
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -51,7 +57,7 @@ public class CatalogService {
         show.setCapacity(capacity);
         show.setStatus(Status.CREATED);
 
-        List<Category> currentCategories = show.getCategories();
+        List<Category> currentCategories = new ArrayList<>();
         currentCategories.add(category);
         show.setCategories(currentCategories);
 
@@ -76,10 +82,12 @@ public class CatalogService {
         performance.setPrice(price);
         performance.setCapacity(capacity);
         performance.setDuration(duration);
+        performance.setShow(show);
+        performance.setStatus(Status.CREATED);
+        performance.setRemainingSeats(capacity);
+        performance.setStreamingURL("streaming.com/" + showId);
 
-        show.getPerformances().add(performance);
-
-        showRepository.save(show);
+        performanceRepository.save(performance);
 
         return performance.getId();
     }
@@ -108,10 +116,10 @@ public class CatalogService {
         return showRepository.findByNameContainingIgnoreCase(name);
     }
 
-    public List<Show> listShowsByCategory(Long categoryId) throws CategoryNotFoundException {
+    public List<Show> listShowsByCategory(Long categoryId) {
        List<Show> shows = categoryRepository.findById(categoryId)
                .map(Category::getShows)
-               .orElseThrow(CategoryNotFoundException::new);
+               .orElse(Collections.emptyList());
 
        return shows;
     }
