@@ -1,5 +1,6 @@
 package edu.uoc.epcsd.showcatalog.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,8 +20,29 @@ public class Show {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "duration", nullable = false)
+    private int duration;
+
+    @Column(name = "capacity", nullable = false)
+    private int capacity;
+
+    @Column(name = "on_sale_date")
+    private String onSaleDate;
+
+    @Column(name = "status", nullable = false)
+    private Status status;
 
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
@@ -29,4 +51,8 @@ public class Show {
             inverseJoinColumns = @JoinColumn(name = "id_category")
     )
     private List<Category> categories;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "show")
+    private List<Performance> performances;
 }
