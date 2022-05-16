@@ -84,4 +84,8 @@ public class CatalogService {
     public void deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
+
+    public void deleteShow(Long showId) {
+        showRepository.deleteById(showId);
+    }
 }

@@ -59,11 +59,13 @@ public class ShowController {
         } catch (CategoryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
+            log.error(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/{showId}/performance")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Long> createPerformance(@PathVariable String showId,
                                                   @RequestBody PerformanceDto performanceDto) {
         try {
@@ -78,9 +80,21 @@ public class ShowController {
         } catch (ShowNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
+            log.error(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> removeShow(@PathVariable Long id) {
+        try {
+            this.catalogService.deleteShow(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            log.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     // add the code for the missing system operations here
 }
