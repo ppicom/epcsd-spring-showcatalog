@@ -105,4 +105,12 @@ public class CatalogService {
     public List<Show> listShowsByName(String name) {
         return showRepository.findByNameContainingIgnoreCase(name);
     }
+
+    public List<Show> listShowsByCategory(Long categoryId) throws CategoryNotFoundException {
+       List<Show> shows = categoryRepository.findById(categoryId)
+               .map(Category::getShows)
+               .orElseThrow(CategoryNotFoundException::new);
+
+       return shows;
+    }
 }

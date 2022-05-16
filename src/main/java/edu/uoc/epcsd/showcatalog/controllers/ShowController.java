@@ -8,6 +8,7 @@ import edu.uoc.epcsd.showcatalog.services.CatalogService;
 import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
 import edu.uoc.epcsd.showcatalog.services.exceptions.ShowNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.glassfish.jersey.server.monitoring.ResponseMXBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("/show")
+@RequestMapping("/shows")
 public class ShowController {
 
     @Autowired
@@ -113,6 +114,19 @@ public class ShowController {
         try {
             List<Show> shows = this.catalogService.listShowsByName(name);
             return ResponseEntity.ok(shows);
+        } catch (Exception e) {
+            log.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<Show>> getShowsByCategory(@QueryParam(value = "categoryId") Long categoryId) {
+        try {
+            List<Show> shows = this.catalogService.listShowsByCategory(categoryId);
+            return ResponseEntity.ok(shows);
+        } catch (CategoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             log.error(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
