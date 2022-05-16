@@ -8,6 +8,7 @@ import edu.uoc.epcsd.showcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.CatalogService;
 import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
+import edu.uoc.epcsd.showcatalog.services.exceptions.PerformanceNotFoundException;
 import edu.uoc.epcsd.showcatalog.services.exceptions.ShowNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.monitoring.ResponseMXBean;
@@ -125,10 +126,16 @@ public class ShowController {
         return this.catalogService.listPerformancesOfShow(showId).orElseThrow(ShowNotFoundException::new);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/cancel")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void cancelShow(@PathVariable long id) throws ShowNotFoundException {
         this.catalogService.cancelShow(id);
+    }
+
+    @PutMapping("/{showId}/performances/{performanceId}/cancel")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void cancelPerformance(@PathVariable long showId, @PathVariable long performanceId) throws ShowNotFoundException, PerformanceNotFoundException {
+        this.catalogService.cancelPerformance(showId, performanceId);
     }
 
     @ExceptionHandler({CategoryNotFoundException.class, ShowNotFoundException.class})

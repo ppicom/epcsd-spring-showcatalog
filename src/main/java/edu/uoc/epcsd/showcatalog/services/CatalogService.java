@@ -8,6 +8,7 @@ import edu.uoc.epcsd.showcatalog.repositories.CategoryRepository;
 import edu.uoc.epcsd.showcatalog.repositories.PerformanceRepository;
 import edu.uoc.epcsd.showcatalog.repositories.ShowRepository;
 import edu.uoc.epcsd.showcatalog.services.exceptions.CategoryNotFoundException;
+import edu.uoc.epcsd.showcatalog.services.exceptions.PerformanceNotFoundException;
 import edu.uoc.epcsd.showcatalog.services.exceptions.ShowNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,5 +145,14 @@ public class CatalogService {
 
         showRepository.save(show);
         performanceRepository.saveAll(show.getPerformances());
+    }
+
+    public void cancelPerformance(long showId, long performanceId) throws PerformanceNotFoundException, ShowNotFoundException {
+        showRepository.findById(showId).orElseThrow(ShowNotFoundException::new);
+        var performance = performanceRepository.findById(performanceId).orElseThrow(PerformanceNotFoundException::new);
+
+        performance.cancel();
+
+        performanceRepository.save(performance);
     }
 }
