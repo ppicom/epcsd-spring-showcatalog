@@ -29,9 +29,6 @@ import java.util.List;
 public class ShowController {
 
     @Autowired
-    private ShowRepository showRepository;
-
-    @Autowired
     private CatalogService catalogService;
 
     @Autowired
@@ -42,7 +39,7 @@ public class ShowController {
     public List<Show> getAllShows() {
         log.trace("getAllShows");
 
-        return showRepository.findAll();
+        return catalogService.getAllShows();
     }
 
     @PostMapping("/")

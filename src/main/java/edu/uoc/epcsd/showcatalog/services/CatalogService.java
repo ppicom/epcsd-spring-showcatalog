@@ -27,6 +27,7 @@ public class CatalogService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+    public List<Show> getAllShows() { return showRepository.findAll(); }
 
     public Long createCategory(String name, String description) {
         Category category = new Category();
